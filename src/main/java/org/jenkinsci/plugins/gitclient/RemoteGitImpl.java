@@ -398,6 +398,14 @@ class RemoteGitImpl implements GitClient, IGitAPI, Serializable {
         return command(PushCommand.class);
     }
 
+
+    /* 
+     * Exec git fetch -all
+     */
+    public void fetchAll() throws GitException, InterruptedException {
+    	proxy.fetchAll();
+    }
+
     /**
      * {@inheritDoc}
      *

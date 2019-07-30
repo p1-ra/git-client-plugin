@@ -354,12 +354,18 @@ public class CliGitAPIImpl extends LegacyCompatibleGitAPIImpl {
             public Integer timeout;
             public boolean tags = true;
             public Integer depth = 1;
+	    private boolean fetchAll = false;
 
             public FetchCommand from(URIish remote, List<RefSpec> refspecs) {
                 this.url = remote;
                 this.refspecs = refspecs;
                 return this;
             }
+
+	    public FetchCommand all() {
+		this.fetchAll = true;
+		return this;
+	    }
 
             public FetchCommand tags(boolean tags) {
                 this.tags = tags;
@@ -413,23 +419,29 @@ public class CliGitAPIImpl extends LegacyCompatibleGitAPIImpl {
                         if (rs != null)
                             args.add(rs.toString());
 
-                if (prune) args.add("--prune");
+		if (fetchAll) {
+		    args.add("--all");
+		}
+		else {
 
-                if (shallow) {
-                    if (depth == null){
-                        depth = 1;
+                    if (prune) args.add("--prune");
+
+                    if (shallow) {
+                        if (depth == null){
+                            depth = 1;
+                        }
+                        args.add("--depth=" + depth);
                     }
-                    args.add("--depth=" + depth);
-                }
 
-                warnIfWindowsTemporaryDirNameHasSpaces();
+                    warnIfWindowsTemporaryDirNameHasSpaces();
 
-                /* If url looks like a remote name reference, convert to remote URL for authentication */
-                /* See JENKINS-50573 for more details */
-                /* "git remote add" rejects remote names with ':' (and it is a common character in remote URLs) */
-                /* "git remote add" allows remote names with '@' but internal git parsing problems seem likely (and it is a common character in remote URLs) */
-                /* "git remote add" allows remote names with '/' but git client plugin parsing problems will occur (and it is a common character in remote URLs) */
-                /* "git remote add" allows remote names with '\' but git client plugin parsing problems will occur */
+                    /* If url looks like a remote name reference, convert to remote URL for authentication */
+                    /* See JENKINS-50573 for more details */
+                    /* "git remote add" rejects remote names with ':' (and it is a common character in remote URLs) */
+                    /* "git remote add" allows remote names with '@' but internal git parsing problems seem likely (and it is a common character in remote URLs) */
+                    /* "git remote add" allows remote names with '/' but git client plugin parsing problems will occur (and it is a common character in remote URLs) */
+                   /* "git remote add" allows remote names with '\' but git client plugin parsing problems will occur */
+		}
                 URIish remoteUrl = url;
                 if (!url.isRemote() && !StringUtils.containsAny(url.toString(), ":@/\\")) {
                     try {
@@ -442,6 +454,11 @@ public class CliGitAPIImpl extends LegacyCompatibleGitAPIImpl {
                 launchCommandWithCredentials(args, workspace, cred, remoteUrl, timeout);
             }
         };
+    }
+
+    /** {@inheritDoc} */
+    public void fetchAll() throws GitException, InterruptedException {
+        fetch_().all().execute();
     }
 
     /** {@inheritDoc} */

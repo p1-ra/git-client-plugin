@@ -314,6 +314,12 @@ public interface GitClient {
     CloneCommand clone_(); // can't use 'clone' as it collides with Object.clone()
 
     /**
+     * Exec `git fetch --all
+     */
+
+    void fetchAll() throws GitException, InterruptedException;
+
+    /**
      * Fetch commits from url which match any of the passed in
      * refspecs. Assumes <code>remote.remoteName.url</code> has been set.
      *

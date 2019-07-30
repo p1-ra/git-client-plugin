@@ -552,6 +552,11 @@ public class JGitAPIImpl extends LegacyCompatibleGitAPIImpl {
                 return this;
             }
 
+            public org.jenkinsci.plugins.gitclient.FetchCommand all() {
+                listener.getLogger().println("[WARNING] JGit doesn't support fetch all command and thereforce all is meaningless. This flag is ignored");
+		return this;
+	    }
+
             public org.jenkinsci.plugins.gitclient.FetchCommand prune() {
                 return prune(true);
             }
@@ -639,6 +644,10 @@ public class JGitAPIImpl extends LegacyCompatibleGitAPIImpl {
         };
     }
 
+
+    public void fetchAll() throws GitException, InterruptedException {
+	fetch_().all().execute();
+    }
     /**
      * {@inheritDoc}
      *

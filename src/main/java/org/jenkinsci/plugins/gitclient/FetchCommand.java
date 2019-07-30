@@ -12,6 +12,12 @@ import java.util.List;
  */
 public interface FetchCommand extends GitCommand {
 
+     /**
+     * all.
+     *
+     * @return a {@link org.jenkinsci.plugins.gitclient.FetchCommand} object.
+     */
+    FetchCommand all();
     /**
      * from.
      *
